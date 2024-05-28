@@ -1,8 +1,8 @@
 // Parameters 
 
-global_outer_radius = 10;
+global_outer_radius = 11;
 global_inner_radius = 9;
-global_joint_radius_narrower = (global_outer_radius - global_inner_radius) / 2 * 1.1;
+global_joint_radius_narrower = (global_outer_radius - global_inner_radius) / 2 + 0.05;
 global_joint_height = 10;
 
 global_engine_stopper_narrower = 2;
@@ -18,14 +18,15 @@ global_rod_height = 28;
 // fins
 number_of_fins = 4;
 fin_height = 35;
-fin_thickness = 1;
-fin_z_offset = 10;
+fin_thickness = 2;
+fin_z_offset = 0;
 fin_base_width = 40;
 fin_top_width = 10;
 
+
 // central 
 
-global_tube_height = 60;
+global_tube_height = 70;
 
 
 // cone 
@@ -33,16 +34,16 @@ global_tube_height = 60;
 global_cone_height = 40;
 global_cone_cone_top_inner_radius = 0.0;
 global_cone_cone_top_outer_radius = 0.5;
-global_cone_with_window = 1;
+global_cone_with_window = 0;
 
 
 // gate
 global_gate_height = 25;
 
 // render
-gen_base = 1;
-gen_body = 1;
-gen_cone = 1;
+gen_base = 0;
+gen_body = 0;
+gen_cone = 0;
 
 
 // Module to create a simple tube
@@ -133,13 +134,49 @@ module rocket_fins(base_height, number_of_fins, outer_radius, fin_height, thickn
     // Define the shape of the fin
     
     edge_distance = (base_width - top_width) / 2;
+
+
+//clipped delta
+        shape = [
+        [0, 0],
+        [base_width, 0],
+        [base_width, fin_height],
+        [edge_distance, fin_height]
+    ];
+
+
+/*
+//trapecoid
         shape = [
         [0, 0],
         [base_width, 0],
         [base_width - edge_distance, fin_height],
         [edge_distance, fin_height]
     ];
-    
+*/
+
+
+/*
+// swept
+        shape = [
+        [0, 0],
+        [base_width, 0],
+        [base_width+edge_distance, fin_height],
+        [edge_distance, fin_height]
+    ];
+*/
+
+/*
+// tapered swept
+        shape = [
+        [0, 0],
+        [base_width, 0],
+        [base_width+edge_distance, fin_height],
+        [2*edge_distance, fin_height]
+    ];
+*/
+
+
     // Calculate the angle between fins
     angle = 360 / number_of_fins;
 
@@ -161,6 +198,18 @@ module rocket_fins(base_height, number_of_fins, outer_radius, fin_height, thickn
     z_joint_ring = max(z_stop_ring, base_height);
     
     translate([0, 0, z_stop_ring]) tube(height = global_engine_stopper_height, inner_radius = global_inner_radius-global_engine_stopper_narrower, outer_radius = global_outer_radius);
+
+    translate([0, 0, z_stop_ring-global_engine_stopper_narrower]) difference() {
+        cylinder(h=global_engine_stopper_narrower, r1=global_inner_radius, r2= global_inner_radius, $fn=100);
+        cylinder(h=global_engine_stopper_narrower, r1=global_inner_radius, r2= global_inner_radius-global_engine_stopper_narrower, $fn=100);
+    }
+
+//in case of upside down printing
+    translate([0, 0, z_stop_ring+global_engine_stopper_height]) difference() {
+        cylinder(h=global_engine_stopper_narrower, r1=global_inner_radius, r2= global_inner_radius, $fn=100);
+        cylinder(h=global_engine_stopper_narrower, r1=global_inner_radius-global_engine_stopper_narrower, r2= global_inner_radius, $fn=100);
+    }
+    
     translate([0, 0, z_joint_ring]) tube(height = global_joint_height, inner_radius = global_inner_radius, outer_radius = global_outer_radius-global_joint_radius_narrower);
 
 //rod
