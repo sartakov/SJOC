@@ -42,7 +42,9 @@ global_gate_height = 25;
 
 // render
 gen_base = 0;
+gen_gate = 0;
 gen_body = 0;
+gen_gate2 = 0;
 gen_cone = 0;
 
 
@@ -57,7 +59,7 @@ module tube(height, inner_radius, outer_radius) {
     }
 }
 
-module tube2(height, inner_radius, outer_radius, bottom_male, top_male,bottom_plank, close_top) { 
+module tube2(height, inner_radius, outer_radius, bottom_male, top_male,plank, gate) { 
     
     difference() {
         // Outer cylinder (tube)
@@ -83,11 +85,22 @@ module tube2(height, inner_radius, outer_radius, bottom_male, top_male,bottom_pl
         translate([0, 0, 0])
             cylinder(h = height, r = inner_radius, $fn=100);
     }
+/*
     if(bottom_plank)
         translate([-inner_radius, -outer_radius/4, 0])
                         cube([inner_radius*2,outer_radius/2,global_joint_height*0.1]);
-    if(close_top)
-        translate([0, 0, height-global_joint_height*0.1])
+    if(top_plank)
+        translate([-inner_radius, -outer_radius/4, height-global_joint_height*0.1])
+                        cube([inner_radius*2,outer_radius/2,global_joint_height*0.1]);
+
+need to be aware of male/female
+*/
+    if(plank)
+        translate([-inner_radius, -outer_radius/4, height/2-(global_joint_height*0.1)*0.5])
+                        cube([inner_radius*2,outer_radius/2,global_joint_height*0.1]);
+
+    if(gate)
+        translate([0, 0, height/2-(global_joint_height*0.1)*0.5])
                         cylinder(h = global_joint_height*0.1, r = inner_radius, $fn=100);
                 
 }
@@ -102,14 +115,18 @@ module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top
             // Inner cone (hollow part)
             translate([0, 0, 0])
                 cylinder(h = cone_height*0.95, r1 = bottom_inner_radius, r2 = top_inner_radius, $fn=100);
+            
+           if(global_cone_with_window)
+             translate([-cone_height/2, 0, cone_height*0.33])
+              rotate([90, 90, 90])
+                cylinder(h = cone_height*2, r1 = 3, r2 = 3, $fn=100);
+            
         }
         // Cylindrical base part
         translate([0, 0, -base_height])
             tube(height=base_height, inner_radius=base_inner_radius, outer_radius = base_outer_radius);
+  
         
-        
-        translate([-base_inner_radius, -bottom_outer_radius/4, -base_height])
-                        cube([base_inner_radius*2,bottom_outer_radius/2,global_joint_height*0.1]);
     }
 }
 
@@ -227,30 +244,17 @@ module rocket_fins(base_height, number_of_fins, outer_radius, fin_height, thickn
 if(gen_base)
 rocket_fins(base_height = global_base_height, number_of_fins = number_of_fins, outer_radius = global_outer_radius, fin_height = fin_height, thickness = fin_thickness, base_width = fin_base_width, top_width = fin_top_width); 
 
+if(gen_gate)
+translate([0, 0, global_base_height + 20]) tube2(height = global_gate_height, inner_radius = global_inner_radius, outer_radius = global_outer_radius, bottom_male=0, top_male=1, plank=1, gate=0);
+
 if(gen_body)
-translate([0, 0, global_base_height + 20]) tube2(height = global_tube_height, inner_radius = global_inner_radius, outer_radius = global_outer_radius, bottom_male=0, top_male=0);
+translate([0, 0, global_base_height + global_gate_height + 20*2]) tube2(height = global_tube_height, inner_radius = global_inner_radius, outer_radius = global_outer_radius, bottom_male=0, top_male=0);
+
+if(gen_gate2)
+translate([0, 0, global_base_height + global_gate_height + global_tube_height + 3*20]) tube2(height = global_gate_height, inner_radius = global_inner_radius, outer_radius = global_outer_radius, bottom_male=1, top_male=1, plank=1, gate=0);
 
 if(gen_cone) {
-if(global_cone_with_window) {
-
-    translate([0, 0, global_base_height + global_tube_height + 20*2]) tube2(height = global_gate_height, inner_radius = global_inner_radius, outer_radius = global_outer_radius, bottom_male=1, top_male=1, bottom_plank=1, close_top=1);
-
-
-    translate([0, 0, global_base_height + global_tube_height + global_gate_height + 3*20])
-        cone_with_window(
-            cone_height = global_cone_height,
-            bottom_inner_radius = global_inner_radius,
-            bottom_outer_radius = global_outer_radius,
-            top_inner_radius = global_cone_cone_top_inner_radius,
-            top_outer_radius = global_cone_cone_top_outer_radius,
-            base_height = global_joint_height,
-            base_inner_radius = global_inner_radius+global_joint_radius_narrower,
-            base_outer_radius = global_outer_radius
-);
-
-
-} else {
-    translate([0, 0, global_base_height + global_tube_height + 20*2])
+    translate([0, 0, global_base_height + global_tube_height + 2*global_gate_height + 20*4])
         cone_with_base(
             cone_height = global_cone_height,
             bottom_inner_radius = global_inner_radius,
@@ -258,10 +262,8 @@ if(global_cone_with_window) {
             top_inner_radius = global_cone_cone_top_inner_radius,
             top_outer_radius = global_cone_cone_top_outer_radius,
             base_height = global_joint_height,
-            base_inner_radius = global_inner_radius,
-            base_outer_radius = global_outer_radius - global_joint_radius_narrower
-);
-
-}
+            base_inner_radius = global_inner_radius + global_joint_radius_narrower,
+            base_outer_radius = global_outer_radius
+    );
 
 }
