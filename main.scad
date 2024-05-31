@@ -26,7 +26,7 @@ fin_top_width = 10;
 
 // central 
 
-global_tube_height = 70;
+global_tube_height = 80;
 
 
 // cone 
@@ -57,7 +57,8 @@ module tube(height, inner_radius, outer_radius) {
     }
 }
 
-module tube2(height, inner_radius, outer_radius, bottom_male, top_male,bottom_plank, close_top) {
+module tube2(height, inner_radius, outer_radius, bottom_male, top_male,bottom_plank, close_top) { 
+    
     difference() {
         // Outer cylinder (tube)
         cylinder(h = height, r = outer_radius, $fn=100);
@@ -66,7 +67,9 @@ module tube2(height, inner_radius, outer_radius, bottom_male, top_male,bottom_pl
                 tube(height=global_joint_height, inner_radius=outer_radius-global_joint_radius_narrower, outer_radius=outer_radius);
         } else {
                 translate([0, 0, 0])
-                    cylinder(h=global_joint_height, r=inner_radius + global_joint_radius_narrower, $fn=100);
+                    cylinder(h=global_joint_height, r=inner_radius + global_joint_radius_narrower, $fn=100);                    
+                translate([0, 0, global_joint_height]) cylinder(h=global_joint_radius_narrower, r1=inner_radius+global_joint_radius_narrower, r2=inner_radius,$fn=100);  
+                
         }
         if(top_male) {
             translate([0, 0, height-global_joint_height])
@@ -74,6 +77,7 @@ module tube2(height, inner_radius, outer_radius, bottom_male, top_male,bottom_pl
         } else {
                 translate([0, 0, height-global_joint_height])
                     cylinder(h=global_joint_height, r=inner_radius + global_joint_radius_narrower, $fn=100);
+                translate([0, 0, height-global_joint_height-global_joint_radius_narrower]) cylinder(h=global_joint_radius_narrower, r1=inner_radius, r2=inner_radius + global_joint_radius_narrower,$fn=100);
         }
         // Inner cylinder (hollow part)
         translate([0, 0, 0])
@@ -85,6 +89,7 @@ module tube2(height, inner_radius, outer_radius, bottom_male, top_male,bottom_pl
     if(close_top)
         translate([0, 0, height-global_joint_height*0.1])
                         cylinder(h = global_joint_height*0.1, r = inner_radius, $fn=100);
+                
 }
 
 module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top_inner_radius, top_outer_radius, base_height, base_inner_radius, base_outer_radius) {
