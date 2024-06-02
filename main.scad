@@ -10,13 +10,14 @@ global_engine_stopper_height = 2;
 
 global_engine_height = 70;
 
-global_base_height = 60;
+global_base_height = 70;
 
 global_rod_radius = 2;
 global_rod_height = 28;
 
 // fins
 number_of_fins = 4;
+
 fin_height = 35;
 fin_thickness = 2;
 fin_z_offset = 0;
@@ -26,26 +27,29 @@ fin_top_width = 10;
 
 // central 
 
-global_tube_height = 80;
+global_tube_height = 120;
 
 
 // cone 
 
 global_cone_height = 40;
 global_cone_cone_top_inner_radius = 0.0;
-global_cone_cone_top_outer_radius = 0.5;
+global_cone_cone_top_outer_radius = 1;
 global_cone_with_window = 0;
 
 
 // gate
 global_gate_height = 25;
 
+global_gate_anker_h = 6;
+global_gate_anker_l = 20;
+
 // render
-gen_base = 0;
-gen_gate = 0;
-gen_body = 0;
-gen_gate2 = 0;
-gen_cone = 0;
+gen_rod_spacer = 1;
+gen_base = 1;
+gen_body = 1;
+gen_gate2 = 1;
+gen_cone = 1;
 
 
 // Module to create a simple tube
@@ -59,11 +63,41 @@ module tube(height, inner_radius, outer_radius) {
     }
 }
 
-module tube2(height, inner_radius, outer_radius, bottom_male, top_male,plank, gate) { 
-    
+
+module anchor(ah, al) {
+
+        shape1 = [
+        [0, 0],
+        [ah*cos(45)*2+al, 0],
+        [ah*cos(45)+al, ah*cos(45)],
+        [ah*cos(45), ah*cos(45)]
+    ];
+
+        shape2 = [
+        [4, 0],
+        [ah*cos(45)*2+al-4, 0],
+        [ah*cos(45)+al-2, ah*cos(45)-2],
+        [ah*cos(45)+2, ah*cos(45)-2]
+    ];  
+
+        difference() {
+                        rotate([0, 90, 0])
+                            linear_extrude(2)
+                                polygon(points = shape1, paths = [[0, 1, 2, 3]]);
+                        rotate([0, 90, 0])
+                            linear_extrude(2)
+                                polygon(points = shape2, paths = [[0, 1, 2, 3]]);   
+            
+        }
+}
+
+module tube2(height, inner_radius, outer_radius, bottom_male, top_male,plank, gate, anch) { 
+  
+
     difference() {
         // Outer cylinder (tube)
         cylinder(h = height, r = outer_radius, $fn=100);
+        
         if(bottom_male) {
             translate([0, 0, 0])
                 tube(height=global_joint_height, inner_radius=outer_radius-global_joint_radius_narrower, outer_radius=outer_radius);
@@ -84,20 +118,27 @@ module tube2(height, inner_radius, outer_radius, bottom_male, top_male,plank, ga
         // Inner cylinder (hollow part)
         translate([0, 0, 0])
             cylinder(h = height, r = inner_radius, $fn=100);
+                 
     }
-/*
-    if(bottom_plank)
-        translate([-inner_radius, -outer_radius/4, 0])
-                        cube([inner_radius*2,outer_radius/2,global_joint_height*0.1]);
-    if(top_plank)
-        translate([-inner_radius, -outer_radius/4, height-global_joint_height*0.1])
-                        cube([inner_radius*2,outer_radius/2,global_joint_height*0.1]);
+/*  
+    if(top_male) {
+        difference() {
+            translate([0, 0, global_joint_height-global_joint_radius_narrower]) cylinder(h=global_joint_radius_narrower, r1=inner_radius+global_joint_radius_narrower, r2=outer_radius,$fn=100); 
+         translate([0, 0, 0])
+            cylinder(h = height, r = inner_radius, $fn=100);
+            }
+    } 
+  */
 
-need to be aware of male/female
-*/
     if(plank)
         translate([-inner_radius, -outer_radius/4, height/2-(global_joint_height*0.1)*0.5])
                         cube([inner_radius*2,outer_radius/2,global_joint_height*0.1]);
+    
+    if(anch) {
+           translate([0, -inner_radius, height/2+global_gate_anker_h*(2*sin(45)+1)])
+           anchor(global_gate_anker_h, global_gate_anker_l);
+    }
+
 
     if(gate)
         translate([0, 0, height/2-(global_joint_height*0.1)*0.5])
@@ -105,7 +146,7 @@ need to be aware of male/female
                 
 }
 
-module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top_inner_radius, top_outer_radius, base_height, base_inner_radius, base_outer_radius) {
+module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top_inner_radius, top_outer_radius, base_height, base_inner_radius, base_outer_radius, plank) {
     // Combine the cone and the cylinder
     union() {
         // Cone part
@@ -125,28 +166,11 @@ module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top
         // Cylindrical base part
         translate([0, 0, -base_height])
             tube(height=base_height, inner_radius=base_inner_radius, outer_radius = base_outer_radius);
-  
-        
-    }
-}
 
-module cone_with_window(cone_height, bottom_inner_radius, bottom_outer_radius, top_inner_radius, top_outer_radius, base_height, base_inner_radius, base_outer_radius) {
-    // Combine the cone and the cylinder
-    union() {
-        // Cone part
-        difference() {
-            // Outer cone
-            cylinder(h = cone_height, r1 = bottom_outer_radius, r2 = top_outer_radius, $fn=100);
-            // Inner cone (hollow part)
-            translate([0, 0, 0])
-                cylinder(h = cone_height*0.95, r1 = bottom_inner_radius, r2 = top_inner_radius, $fn=100);
-            translate([-cone_height/2, 0, cone_height*0.33])
-              rotate([90, 90, 90])
-                cylinder(h = cone_height*2, r1 = 3, r2 = 3, $fn=100);
-        }
-        // Cylindrical base part
-        translate([0, 0, -base_height]) 
-                tube(height=base_height, inner_radius=base_inner_radius, outer_radius = base_outer_radius);
+        if(plank)
+            translate([-bottom_inner_radius, -bottom_outer_radius/4,-base_height/2-(global_joint_height*0.1)*0.5])
+                        cube([bottom_inner_radius*2,bottom_outer_radius/2,global_joint_height*0.1]);
+
     }
 }
 
@@ -156,6 +180,7 @@ module rocket_fins(base_height, number_of_fins, outer_radius, fin_height, thickn
     // Define the shape of the fin
     
     edge_distance = (base_width - top_width) / 2;
+
 
 
 //clipped delta
@@ -241,29 +266,30 @@ module rocket_fins(base_height, number_of_fins, outer_radius, fin_height, thickn
 }
 ///////////////////////////////////////////////////////////
 
+if(gen_rod_spacer)
+        tube(height = 50, inner_radius = global_rod_radius, outer_radius = global_rod_radius+0.5);
+
+
 if(gen_base)
 rocket_fins(base_height = global_base_height, number_of_fins = number_of_fins, outer_radius = global_outer_radius, fin_height = fin_height, thickness = fin_thickness, base_width = fin_base_width, top_width = fin_top_width); 
 
-if(gen_gate)
-translate([0, 0, global_base_height + 20]) tube2(height = global_gate_height, inner_radius = global_inner_radius, outer_radius = global_outer_radius, bottom_male=0, top_male=1, plank=1, gate=0);
 
 if(gen_body)
-translate([0, 0, global_base_height + global_gate_height + 20*2]) tube2(height = global_tube_height, inner_radius = global_inner_radius, outer_radius = global_outer_radius, bottom_male=0, top_male=0);
+translate([0, 0, global_base_height + global_gate_height + 20*1]) tube2(height = global_tube_height, inner_radius = global_inner_radius, outer_radius = global_outer_radius, bottom_male=0, top_male=1, anch=1, plank=0);
 
-if(gen_gate2)
-translate([0, 0, global_base_height + global_gate_height + global_tube_height + 3*20]) tube2(height = global_gate_height, inner_radius = global_inner_radius, outer_radius = global_outer_radius, bottom_male=1, top_male=1, plank=1, gate=0);
 
 if(gen_cone) {
-    translate([0, 0, global_base_height + global_tube_height + 2*global_gate_height + 20*4])
+    translate([0, 0, global_base_height + global_tube_height + 2*global_gate_height + 20*2])
         cone_with_base(
             cone_height = global_cone_height,
-            bottom_inner_radius = global_inner_radius,
+            bottom_inner_radius = global_inner_radius + global_joint_radius_narrower,
             bottom_outer_radius = global_outer_radius,
             top_inner_radius = global_cone_cone_top_inner_radius,
             top_outer_radius = global_cone_cone_top_outer_radius,
             base_height = global_joint_height,
             base_inner_radius = global_inner_radius + global_joint_radius_narrower,
-            base_outer_radius = global_outer_radius
+            base_outer_radius = global_outer_radius,
+            plank = 1
     );
 
 }
