@@ -3,7 +3,7 @@ SCAD_FILE = main.scad
 STL_DIR = stl_outputs
 
 # Parameters and corresponding output files
-PARAMS = gen_base gen_body gen_cone
+PARAMS = gen_base gen_body gen_cone gen_rod_spacer
 STL_FILES = $(foreach param, $(PARAMS), $(STL_DIR)/model_$(param).stl)
 
 # Default target

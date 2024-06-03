@@ -1,3 +1,7 @@
+include <nosecones.scad>
+
+
+
 // Parameters 
 
 global_outer_radius = 11;
@@ -32,7 +36,7 @@ global_tube_height = 120;
 
 // cone 
 
-global_cone_height = 40;
+global_cone_height = 35;
 global_cone_cone_top_inner_radius = 0.0;
 global_cone_cone_top_outer_radius = 1;
 global_cone_with_window = 0;
@@ -43,13 +47,13 @@ global_gate_height = 25;
 
 global_gate_anker_h = 6;
 global_gate_anker_l = 20;
+global_anchor_extrude = 2;
 
 // render
-gen_rod_spacer = 1;
-gen_base = 1;
-gen_body = 1;
-gen_gate2 = 1;
-gen_cone = 1;
+gen_rod_spacer = 0;
+gen_base = 0;
+gen_body = 0;
+gen_cone = 0;
 
 
 // Module to create a simple tube
@@ -82,16 +86,28 @@ module anchor(ah, al) {
 
         difference() {
                         rotate([0, 90, 0])
-                            linear_extrude(2)
+                            linear_extrude(global_anchor_extrude)
                                 polygon(points = shape1, paths = [[0, 1, 2, 3]]);
                         rotate([0, 90, 0])
-                            linear_extrude(2)
+                            linear_extrude(global_anchor_extrude)
                                 polygon(points = shape2, paths = [[0, 1, 2, 3]]);   
             
         }
 }
 
-module tube2(height, inner_radius, outer_radius, bottom_male, top_male,plank, gate, anch) { 
+// Create the vertical text
+module vertical_text(text_string, text_size, text_extrude, total_height) {
+    num_chars = len(text_string);
+    spacing = total_height / num_chars;
+    for (i = [0:num_chars-1]) {
+        translate([0, 0, -i * spacing - text_size/2])
+        rotate([90,0,0])
+        linear_extrude(height = text_extrude)
+        text(text = str(text_string[i]), size = text_size, valign = "center", halign = "center");
+    }
+}
+
+module tube2(height, inner_radius, outer_radius, bottom_male, top_male,plank, gate, anch, add_text) { 
   
 
     difference() {
@@ -135,7 +151,7 @@ module tube2(height, inner_radius, outer_radius, bottom_male, top_male,plank, ga
                         cube([inner_radius*2,outer_radius/2,global_joint_height*0.1]);
     
     if(anch) {
-           translate([0, -inner_radius, height/2+global_gate_anker_h*(2*sin(45)+1)])
+           translate([-global_anchor_extrude/2, -inner_radius, height/2+global_gate_anker_h*(2*sin(45)+1)])
            anchor(global_gate_anker_h, global_gate_anker_l);
     }
 
@@ -143,6 +159,24 @@ module tube2(height, inner_radius, outer_radius, bottom_male, top_male,plank, ga
     if(gate)
         translate([0, 0, height/2-(global_joint_height*0.1)*0.5])
                         cylinder(h = global_joint_height*0.1, r = inner_radius, $fn=100);
+
+    if(add_text) {
+        // Parameters
+        text_string = "SJOC3";
+        text_size = 10; // Size of the text
+       // total_height = 100; // Total height for the vertical text
+
+        total_height = height - global_joint_height*bottom_male - global_joint_height*top_male;
+        
+        text_begin = height - global_joint_height*top_male;
+        
+        translate([0, -global_joint_radius_narrower/4, 0])
+        intersection() {
+         cylinder(h = height, r = outer_radius, $fn=100);
+        translate([0, -inner_radius, text_begin])
+                vertical_text(text_string, text_size, (outer_radius-inner_radius), total_height);
+        }
+    }
                 
 }
 
@@ -151,12 +185,21 @@ module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top
     union() {
         // Cone part
         difference() {
+/*
             // Outer cone
             cylinder(h = cone_height, r1 = bottom_outer_radius, r2 = top_outer_radius, $fn=100);
             // Inner cone (hollow part)
             translate([0, 0, 0])
                 cylinder(h = cone_height*0.95, r1 = bottom_inner_radius, r2 = top_inner_radius, $fn=100);
-            
+  */
+  
+           difference() {
+           cone_power_series(n = 0.5, R = bottom_outer_radius, L = cone_height, s = 100);
+            cone_power_series(n = 0.5, R = bottom_inner_radius, L = cone_height*0.99, s = 100);
+           }
+           
+
+          
            if(global_cone_with_window)
              translate([-cone_height/2, 0, cone_height*0.33])
               rotate([90, 90, 90])
@@ -168,7 +211,7 @@ module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top
             tube(height=base_height, inner_radius=base_inner_radius, outer_radius = base_outer_radius);
 
         if(plank)
-            translate([-bottom_inner_radius, -bottom_outer_radius/4,-base_height/2-(global_joint_height*0.1)*0.5])
+            translate([-bottom_inner_radius, -bottom_outer_radius/4,0])
                         cube([bottom_inner_radius*2,bottom_outer_radius/2,global_joint_height*0.1]);
 
     }
@@ -275,7 +318,7 @@ rocket_fins(base_height = global_base_height, number_of_fins = number_of_fins, o
 
 
 if(gen_body)
-translate([0, 0, global_base_height + global_gate_height + 20*1]) tube2(height = global_tube_height, inner_radius = global_inner_radius, outer_radius = global_outer_radius, bottom_male=0, top_male=1, anch=1, plank=0);
+translate([0, 0, global_base_height + global_gate_height + 20*1]) tube2(height = global_tube_height, inner_radius = global_inner_radius, outer_radius = global_outer_radius, bottom_male=0, top_male=1, anch=1, plank=0, add_text=1);
 
 
 if(gen_cone) {
@@ -293,3 +336,5 @@ if(gen_cone) {
     );
 
 }
+
+

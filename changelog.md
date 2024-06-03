@@ -2,6 +2,7 @@
 * No more gates
 * Anchor instead of anker inside body
 * Extra rod 
+* Various nose cones
 
 # 0.2
 * Makefile to separate compiling of STLs
