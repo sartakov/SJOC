@@ -22,8 +22,8 @@ global_rod_height = 28;
 // fins
 number_of_fins = 4;
 
-fin_height = 35;
-fin_thickness = 2;
+fin_height = 30;
+fin_thickness = 1;
 fin_z_offset = 0;
 fin_base_width = 40;
 fin_top_width = 10;
@@ -185,17 +185,10 @@ module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top
     union() {
         // Cone part
         difference() {
-/*
-            // Outer cone
-            cylinder(h = cone_height, r1 = bottom_outer_radius, r2 = top_outer_radius, $fn=100);
-            // Inner cone (hollow part)
-            translate([0, 0, 0])
-                cylinder(h = cone_height*0.95, r1 = bottom_inner_radius, r2 = top_inner_radius, $fn=100);
-  */
-  
            difference() {
-           cone_power_series(n = 0.5, R = bottom_outer_radius, L = cone_height, s = 100);
-            cone_power_series(n = 0.5, R = bottom_inner_radius, L = cone_height*0.99, s = 100);
+            cone_power_series(n = 0.5, R = bottom_outer_radius, L = cone_height, s = 100);
+               //inner shape is cone to avoid problems with support
+            cylinder(h = cone_height-(bottom_outer_radius-bottom_inner_radius), r1 = bottom_inner_radius, r2 = 0, $fn=100);
            }
            
 
