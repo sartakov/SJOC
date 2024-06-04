@@ -151,7 +151,7 @@ module tube2(height, inner_radius, outer_radius, bottom_male, top_male,plank, ga
                         cube([inner_radius*2,outer_radius/2,global_joint_height*0.1]);
     
     if(anch) {
-           translate([-global_anchor_extrude/2, -inner_radius, height/2+global_gate_anker_h*(2*sin(45)+1)])
+           translate([-global_anchor_extrude/2, -inner_radius, height-(1-top_male)*global_joint_height-global_gate_anker_h])
            anchor(global_gate_anker_h, global_gate_anker_l);
     }
 
@@ -166,9 +166,9 @@ module tube2(height, inner_radius, outer_radius, bottom_male, top_male,plank, ga
         text_size = 10; // Size of the text
        // total_height = 100; // Total height for the vertical text
 
-        total_height = height - global_joint_height*bottom_male - global_joint_height*top_male;
+        total_height = height - 2*global_joint_height;
         
-        text_begin = height - global_joint_height*top_male;
+        text_begin = height - global_joint_height - text_size/2;
         
         translate([0, -global_joint_radius_narrower/4, 0])
         intersection() {
