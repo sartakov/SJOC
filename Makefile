@@ -1,5 +1,5 @@
 OPENSCAD = openscad
-SCAD_FILE = main.scad
+SCAD_FILE = default.scad
 STL_DIR = stl_outputs
 
 # Parameters and corresponding output files
