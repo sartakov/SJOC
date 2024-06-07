@@ -1,4 +1,64 @@
 include <nosecones.scad>
+
+
+/********************************/
+/************ FINS **************/
+/********************************/
+
+function generate_fin_shape(base_width, top_width, fin_height, shape_type) =
+    shape_type == 1 ?
+// tapered swept 
+ [
+        [0, 0],
+        [base_width, 0],
+        [base_width+(base_width - top_width) / 2, fin_height],
+        [2*(base_width - top_width) / 2, fin_height]
+    ] :
+    shape_type == 2 ?
+// trapecoid
+    [
+        [0, 0],
+        [base_width, 0],
+        [base_width - (base_width - top_width) / 2, fin_height],
+        [(base_width - top_width) / 2, fin_height]
+    ] :
+    shape_type == 3 ?
+ // swept
+   [
+        [0, 0],
+        [base_width, 0],
+        [base_width+(base_width - top_width) / 2, fin_height],
+        [(base_width - top_width) / 2, fin_height]
+    ] :
+//default: clipped delta
+    [
+        [0, 0],
+        [base_width, 0],
+        [base_width, fin_height],
+        [(base_width - top_width) / 2, fin_height]
+    ];
+
+module gen_fins(number_of_fins, inner_radius, thickness, base_width, top_width, fin_height, shape_type) {
+
+    // Calculate the angle between fins
+    angle = 360 / number_of_fins;
+
+    // Draw fins around the rocket
+    for (i = [0:number_of_fins - 1]) {
+        rotate(i * angle)
+            translate([-inner_radius, 0])
+                rotate([0, 0, 90])
+                    translate([-thickness * 0.5, 0, fin_z_offset+base_width])
+                        rotate([0, 90, 0])
+                            linear_extrude(thickness)
+                                polygon(points = generate_fin_shape(base_width, top_width, fin_height, shape_type));
+    }
+    
+}
+
+/******************** END OF FINS *******/
+
+
 // Module to create a simple tube
 module tube(height, inner_radius, outer_radius) {
     difference() {
@@ -157,69 +217,10 @@ module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top
 }
 
 
+
 // Function to draw rocket fins using Clipped Delta shape
 module rocket_fins(base_height, number_of_fins, outer_radius, fin_height, thickness, base_width, top_width) {
-    // Define the shape of the fin
-    
-    edge_distance = (base_width - top_width) / 2;
-
-
-
-//clipped delta
-        shape = [
-        [0, 0],
-        [base_width, 0],
-        [base_width, fin_height],
-        [edge_distance, fin_height]
-    ];
-
-
-/*
-//trapecoid
-        shape = [
-        [0, 0],
-        [base_width, 0],
-        [base_width - edge_distance, fin_height],
-        [edge_distance, fin_height]
-    ];
-*/
-
-
-/*
-// swept
-        shape = [
-        [0, 0],
-        [base_width, 0],
-        [base_width+edge_distance, fin_height],
-        [edge_distance, fin_height]
-    ];
-*/
-
-/*
-// tapered swept
-        shape = [
-        [0, 0],
-        [base_width, 0],
-        [base_width+edge_distance, fin_height],
-        [2*edge_distance, fin_height]
-    ];
-*/
-
-
-    // Calculate the angle between fins
-    angle = 360 / number_of_fins;
-
-    // Draw fins around the rocket
-    for (i = [0:number_of_fins - 1]) {
-        rotate(i * angle)
-            translate([-global_inner_radius, 0])
-                rotate([0, 0, 90])
-                    translate([-thickness*0.5, 0, fin_z_offset+base_width])
-                        rotate([0, 90, 0])
-                            linear_extrude(thickness)
-                                polygon(points = shape, paths = [[0, 1, 2, 3]]);
-    }
-
+    gen_fins(number_of_fins, global_inner_radius, fin_thickness, base_width, top_width, fin_height, fin_shape_type);
 
     tube(height = base_height, inner_radius = global_inner_radius, outer_radius = outer_radius);
 

@@ -29,6 +29,12 @@ fin_z_offset = 0;
 fin_base_width = 40;
 fin_top_width = 10;
 
+//0 Clipped Delta
+//1 Taper Swept
+//2 Trapecoid
+//3 Swept
+fin_shape_type = 0; 
+
 
 // central 
 
@@ -52,7 +58,7 @@ global_anchor_extrude = 2;
 
 // render
 gen_rod_spacer = 0;
-gen_base = 0;
+gen_base = 1;
 gen_body = 0;
 gen_cone = 0;
 
