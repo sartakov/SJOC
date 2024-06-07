@@ -53,7 +53,7 @@ global_anchor_extrude = 2;
 // render
 
 gen_base = 1;
-gen_body = 0;
+gen_body = 1;
 gen_cone = 1;
 
 module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thickness, base_width, top_width) {
@@ -99,61 +99,74 @@ module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thick
          }
     }
 
-
-    tube(height = base_height, inner_radius = global_inner_radius, outer_radius = outer_radius);
-
-
-    translate([0,0,base_height])
-        cylinder(h=32, r1=outer_radius,r2=13.5,$fn=100);
-    translate([0,0,base_height+32])
-        cylinder(h=10.5, r1=13.5,r2=15.25,$fn=100);
-  
-      translate([0,0,base_height+32+10.5])
-        cylinder(h=59, r1=15.25,r2=13.27,$fn=100);  
-
-      translate([0,0,base_height+32+10.5+59])
-        cylinder(h=2.31, r1=13.6,r2=13.6,$fn=100);  
-
-
+    difference() {
+        union() {
+          tube(height = base_height, inner_radius = global_inner_radius, outer_radius = outer_radius);
+          translate([0,0,base_height]) cylinder(h=32, r1=outer_radius,r2=13.5,$fn=100);
+          translate([0,0,base_height+32]) cylinder(h=10.5, r1=13.5,r2=15.25,$fn=100); 
+        }
+        cylinder(h=base_height+32+10.5,r=global_inner_radius, $fn=100);
+    }
     
-//goes insidem should be  12.6+3, but i use +5 instead
-      translate([0,0,base_height+32+10.5+59+2.31])
-        cylinder(h=12.6, r1=12.65,r2=12.3,$fn=100);  
+    translate([0, 0,base_height+32 + 10.5]) tube(height = global_joint_height, inner_radius = global_inner_radius, outer_radius = (15.25+global_inner_radius)/2-global_joint_radius_narrower);
 
-      translate([0,0,base_height+32+10.5+59+2.31+12.6])
-        cylinder(h=3, r1=12.3,r2=0,$fn=100); 
+
+    z_stop_ring = min(base_height-global_engine_stopper_height, global_engine_height);
+    z_joint_ring = max(z_stop_ring, base_height);
+    
+    translate([0, 0, z_stop_ring]) tube(height = global_engine_stopper_height, inner_radius = global_inner_radius-global_engine_stopper_narrower, outer_radius = global_outer_radius);
+
+    translate([0, 0, z_stop_ring-global_engine_stopper_narrower]) difference() {
+        cylinder(h=global_engine_stopper_narrower, r1=global_inner_radius, r2= global_inner_radius, $fn=100);
+        cylinder(h=global_engine_stopper_narrower, r1=global_inner_radius, r2= global_inner_radius-global_engine_stopper_narrower, $fn=100);
+    }
+
+//in case of upside down printing
+    translate([0, 0, z_stop_ring+global_engine_stopper_height]) difference() {
+        cylinder(h=global_engine_stopper_narrower, r1=global_inner_radius, r2= global_inner_radius, $fn=100);
+        cylinder(h=global_engine_stopper_narrower, r1=global_inner_radius-global_engine_stopper_narrower, r2= global_inner_radius, $fn=100);
+    }
+
+
+}
+
+
+
+module body() {
+   difference() {
+    union() {
+    
+      translate([0,0,0]) cylinder(h=59, r1=15.25,r2=13.27,$fn=100);  
+      translate([0,0,59]) cylinder(h=2.31, r1=13.6,r2=13.6,$fn=100);  
+      translate([0,0, 59+2.31]) cylinder(h=12.6, r1=12.65,r2=12.3,$fn=100);  
+      translate([0,0,59+2.31+12.6]) cylinder(h=3, r1=12.3,r2=0,$fn=100); 
         
         
         
     // Calculate the angle between fins
     angle2 = 360 / 6;
 
-
-    translate([0,0,base_height+32+10.5+59+2.31]) {
+    translate([0,0,59+2.31])
     // Draw fins around the rocket
-    for (i = [0:6 - 1]) {
-        rotate(i * angle2) {
-
+    for (i = [0:6 - 1])
+        rotate(i * angle2)
             translate([-12.4, 0]) {
                 rotate([0, 0, 45]) cylinder(h=10, r1=2.5,r2=0,$fn=4);
                 translate([0,0,-2]) rotate([0, 0, 45]) cylinder(h=2, r1=2.5,r2=2.5,$fn=4); 
             }
 
-         }
-        }
-    }
         
 //end of stage 2
 
 
-      translate([0,0,base_height+32+10.5+59+2.31+8])
+      translate([0,0,59+2.31+8])
         cylinder(h=4, r1=13.6,r2=13.6,$fn=100);
 
 
     // Calculate the angle between fins
     angle3 = 360 / 9;
 
-    translate([0,0,base_height+32+10.5+59+2.31+8+4-1]) {
+    translate([0,0,59+2.31+8+4-1]) {
     // Draw fins around the rocket
     for (i = [0:9 - 1]) {
         rotate(i * angle3) {
@@ -167,12 +180,17 @@ module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thick
         }
     }
  
+    //this cylinder does not exist in reality
+    
+        translate([0,0,59+2.31+8 + 4])
+        cylinder(h=14*cos(45)-0.5, r1=global_outer_radius,r2=global_outer_radius,$fn=100);  
+    
 
-      translate([0,0,base_height+32+10.5+59+2.31+8+4-1+14*cos(45)-1])
+      translate([0,0,59+2.31+8+4-1+14*cos(45)-1])
         cylinder(h=4, r1=13.6,r2=13.6,$fn=100);
 
 
-     translate([0,0,base_height+32+10.5+59+2.31+8+4-1+14*cos(45)-1+4])
+     translate([0,0,59+2.31+8+4-1+14*cos(45)-1+4])
         cylinder(h=5.8, r1=13.2,r2=13.2,$fn=100);    
     
     n_sh=90;
@@ -180,7 +198,7 @@ module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thick
     // Calculate the angle between fins
     angle4 = 360 / n_sh;
 
-    translate([0,0,base_height+32+10.5+59+2.31+8+4-1+14*cos(45)-1+4]) {
+    translate([0,0,59+2.31+8+4-1+14*cos(45)-1+4]) {
     // Draw fins around the rocket
     for (i = [0:n_sh - 1]) {
         rotate(i * angle4) {
@@ -195,13 +213,13 @@ module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thick
 
 
 ///////
-     translate([0,0,base_height+32+10.5+59+2.31+8+4-1+14*cos(45)-1+4+5.8])
-        cylinder(h=44, r1=13.8,r2=13.8,$fn=100);    
+     translate([0,0,59+2.31+8+4-1+14*cos(45)-1+4+5.8])
+        cylinder(h=34, r1=13.8,r2=13.8,$fn=100);    
     
     angle5 = 360 / 4;
 
 
-    translate([0,0,base_height+32+10.5+59+2.31+8+4-1+14*cos(45)-1+4+5.8]) {
+    translate([0,0,59+2.31+8+4-1+14*cos(45)-1+4+5.8]) {
     // Draw fins around the rocket
     for (i = [0:4 - 1]) {
         rotate(i * angle5) {
@@ -214,31 +232,38 @@ module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thick
          }
         }
     }    
-    
-//////
-
-     translate([0,0,base_height+32+10.5+59+2.31+8+4-1+14*cos(45)-1+4+5.8+44])
-        cylinder(h=34, r1=13.8,r2=0.25,$fn=100);    
-
   
+//////
 }
 
+cylinder(h=59+2.31+8+4-1+14*cos(45)-1+4+5.8 + 34,r=global_inner_radius, $fn=100);
+cylinder(h = global_joint_height, r = (15.25+global_inner_radius)/2+global_joint_radius_narrower*0, $fn=100);
+}
+
+translate([0, 0,59+2.31+8+4-1+14*cos(45)-1+4+5.8 + 34]) 
+    tube(height = global_joint_height, inner_radius = global_inner_radius, outer_radius = (13.8+global_inner_radius)/2-global_joint_radius_narrower/2);
+
+}
 
 
 if(gen_base)
 booster_fins(base_height = global_base_height, number_of_fins = number_of_fins, outer_radius = global_outer_radius, fin_height = fin_height, thickness = fin_thickness, base_width = fin_base_width, top_width = fin_top_width); 
 
+if(gen_body)
+       translate([0,0,global_base_height+32+10.5 + 12*1])
+            body();
+
 
 if(gen_cone) {
-    translate([0, 0, global_base_height+32+10.5+59+2.31+8+4-1+14*cos(45)-1+4+5.8+44 + 34 + 20*1])
+    translate([0, 0, global_base_height+32+10.5+59+2.31+8+4-1+14*cos(45)-1+4+5.8+34 + global_joint_height + 12*2])
         cone_with_base(
             cone_height = global_cone_height,
-            bottom_inner_radius = global_inner_radius + global_joint_radius_narrower,
+            bottom_inner_radius = (13.8+global_inner_radius)/2 + global_joint_radius_narrower/2,
             bottom_outer_radius = 13.8,
             top_inner_radius = global_cone_cone_top_inner_radius,
             top_outer_radius = global_cone_cone_top_outer_radius,
             base_height = global_joint_height,
-            base_inner_radius = global_inner_radius + global_joint_radius_narrower,
+            base_inner_radius = (13.8+global_inner_radius)/2 + global_joint_radius_narrower/2,
             base_outer_radius = 13.8,
             plank = 1
     );
