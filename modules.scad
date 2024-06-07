@@ -129,7 +129,10 @@ module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top
         // Cone part
         difference() {
            difference() {
-            cone_power_series(n = 0.5, R = bottom_outer_radius, L = cone_height, s = 100);
+	    if(model_default)
+                cone_power_series(n = 0.5, R = bottom_outer_radius, L = cone_height, s = 100);
+	    if(model_vostok)
+                cylinder(h = cone_height, r1=bottom_outer_radius, r2=0.25, $fn=100);
                //inner shape is cone to avoid problems with support
             cylinder(h = cone_height-(bottom_outer_radius-bottom_inner_radius), r1 = bottom_inner_radius, r2 = 0, $fn=100);
            }

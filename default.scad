@@ -1,5 +1,7 @@
 include <modules.scad>
 
+model_default = 1;
+model_vostok = 0;
 
 // Parameters 
 
