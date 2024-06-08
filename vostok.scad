@@ -54,8 +54,8 @@ global_anchor_extrude = 2;
 // render
 
 gen_base = 1;
-gen_body = 0;
-gen_cone = 0;
+gen_body = 1;
+gen_cone = 1;
 
 
 module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thickness, base_width, top_width) {
@@ -224,13 +224,13 @@ module body() {
 
 cylinder(h=59+2.31+8+4-1+14*cos(45)-1+4+5.8 + 34,r=global_inner_radius, $fn=100);
 cylinder(h = global_joint_height, r = joint_female(global_inner_radius, 15.25, global_joint_luft), $fn=100);
+
+translate([0, 0,59+2.31+8+4-1+14*cos(45)-1+4+5.8 + 34-global_joint_height]) 
+    cylinder(h= global_joint_height, r = joint_female(global_inner_radius, 13.8, global_joint_luft), $fn=100);
 }
 
-translate([0, 0,59+2.31+8+4-1+14*cos(45)-1+4+5.8 + 34]) 
-    tube(height = global_joint_height, inner_radius = global_inner_radius, outer_radius = joint_male(global_inner_radius, 13.8, global_joint_luft));
 
-
-translate([-global_anchor_extrude/2, -global_inner_radius, global_joint_height+5*global_gate_anker_h])
+translate([-global_anchor_extrude/2, -global_inner_radius, global_joint_height+4.75*global_gate_anker_h])
            anchor(global_gate_anker_h, global_gate_anker_l);
 
 }
@@ -245,7 +245,7 @@ if(gen_body)
 
 
 if(gen_cone) {
-    translate([0, 0, global_base_height+32+10.5+59+2.31+8+4-1+14*cos(45)-1+4+5.8+34 + global_joint_height + 12*2])
+    translate([0, 0, global_base_height+32+10.5+59+2.31+8+4-1+14*cos(45)-1+4+5.8+34 + global_joint_height + 12.0])
         cone_with_base(
             cone_height = global_cone_height,
             bottom_inner_radius = joint_female(global_inner_radius, 13.8, global_joint_luft),
@@ -253,8 +253,8 @@ if(gen_cone) {
             top_inner_radius = global_cone_cone_top_inner_radius,
             top_outer_radius = global_cone_cone_top_outer_radius,
             base_height = global_joint_height,
-            base_inner_radius = joint_female(global_inner_radius, 13.8, global_joint_luft),
-            base_outer_radius = 13.8,
+            base_inner_radius = global_inner_radius,
+            base_outer_radius = joint_male(global_inner_radius, 13.8, global_joint_luft),
             plank = 1
     );
 

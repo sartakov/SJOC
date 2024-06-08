@@ -222,9 +222,15 @@ module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top
             tube(height=base_height, inner_radius=base_inner_radius, outer_radius = base_outer_radius);
 
         if(plank)
-            translate([-bottom_inner_radius, -bottom_outer_radius/4,0])
+	    //female connector
+	    if(base_outer_radius == bottom_outer_radius) {
+                translate([-bottom_inner_radius, -bottom_outer_radius/4,0])
                         cube([bottom_inner_radius*2,bottom_outer_radius/2,global_joint_height*0.1]);
-
+	    } else {
+	    //so far male connector
+                translate([-base_inner_radius, -base_inner_radius/4,-global_joint_height])
+                        cube([base_inner_radius*2,base_inner_radius/2,global_joint_height*0.1]);
+	    }
     }
 }
 

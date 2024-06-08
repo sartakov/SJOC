@@ -1,3 +1,12 @@
+# 0.4
+* Split code base in two parts: models and modules 
+* Default model and Vostok-1 model 
+* Function to generate fins of different types
+* Function to generate make and female joints
+* Todo: tube and tube 2 are now cylinders
+* Todo: differentiate inner radius vs. rocket mount
+
+
 # 0.3
 * No more gates
 * Anchor instead of anker inside body
