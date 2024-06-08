@@ -58,7 +58,7 @@ global_anchor_extrude = 2;
 
 // render
 gen_rod_spacer = 0;
-gen_base = 1;
+gen_base = 0;
 gen_body = 0;
 gen_cone = 0;
 

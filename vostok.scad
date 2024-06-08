@@ -9,6 +9,7 @@ global_outer_radius = 10.78;
 global_inner_radius = 9;
 global_joint_radius_narrower = (global_outer_radius - global_inner_radius) / 2 + 0.05;
 global_joint_height = 10;
+global_joint_luft = 0.05;
 
 global_engine_stopper_narrower = 2;
 global_engine_stopper_height = 2;
@@ -53,25 +54,11 @@ global_anchor_extrude = 2;
 // render
 
 gen_base = 1;
-gen_body = 1;
-gen_cone = 1;
+gen_body = 0;
+gen_cone = 0;
+
 
 module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thickness, base_width, top_width) {
-    // Define the shape of the fin
-    
-    edge_distance = (base_width - top_width) / 2;
-
-
-
-//clipped delta
-        shape = [
-        [0, 0],
-        [base_width, 0],
-        [base_width, fin_height],
-        [edge_distance, fin_height]
-    ];
-
-
 
     // Calculate the angle between fins
     angle = 360 / number_of_fins;
@@ -85,15 +72,14 @@ module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thick
                 translate([0,0,0])          cylinder(h=29, r1=13.5,r2=13.5,$fn=100);
                 translate([0, 0, 29])       cylinder(h=111, r1=13.5,r2=6.6,$fn=100);
                 translate([0, 0, 29+111])   cylinder(h=43, r1=6.6,r2=0.8,$fn=100);
-
                 translate([0, 0, 29+111+35])   cylinder(h=10, r1=3.5,r2=1,$fn=100);
-                
+
                 //fins
                 rotate([0, 0, 90])
-                    translate([0, 13.0, base_width])
+                    translate([-thickness*0.5, 13.0, base_width])
                         rotate([0, 90, 0])
                             linear_extrude(thickness)
-                                polygon(points = shape, paths = [[0, 1, 2, 3]]);
+                                polygon(points = generate_fin_shape(base_width, top_width, fin_height, 0));
                 }
             }
          }
@@ -108,7 +94,7 @@ module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thick
         cylinder(h=base_height+32+10.5,r=global_inner_radius, $fn=100);
     }
     
-    translate([0, 0,base_height+32 + 10.5]) tube(height = global_joint_height, inner_radius = global_inner_radius, outer_radius = (15.25+global_inner_radius)/2-global_joint_radius_narrower);
+    translate([0, 0,base_height+32 + 10.5]) tube(height = global_joint_height, inner_radius = global_inner_radius, outer_radius = joint_male(global_inner_radius, 15.25, global_joint_luft));
 
 
     z_stop_ring = min(base_height-global_engine_stopper_height, global_engine_height);
@@ -237,11 +223,15 @@ module body() {
 }
 
 cylinder(h=59+2.31+8+4-1+14*cos(45)-1+4+5.8 + 34,r=global_inner_radius, $fn=100);
-cylinder(h = global_joint_height, r = (15.25+global_inner_radius)/2+global_joint_radius_narrower*0, $fn=100);
+cylinder(h = global_joint_height, r = joint_female(global_inner_radius, 15.25, global_joint_luft), $fn=100);
 }
 
 translate([0, 0,59+2.31+8+4-1+14*cos(45)-1+4+5.8 + 34]) 
-    tube(height = global_joint_height, inner_radius = global_inner_radius, outer_radius = (13.8+global_inner_radius)/2-global_joint_radius_narrower/2);
+    tube(height = global_joint_height, inner_radius = global_inner_radius, outer_radius = joint_male(global_inner_radius, 13.8, global_joint_luft));
+
+
+translate([-global_anchor_extrude/2, -global_inner_radius, global_joint_height+5*global_gate_anker_h])
+           anchor(global_gate_anker_h, global_gate_anker_l);
 
 }
 
@@ -250,7 +240,7 @@ if(gen_base)
 booster_fins(base_height = global_base_height, number_of_fins = number_of_fins, outer_radius = global_outer_radius, fin_height = fin_height, thickness = fin_thickness, base_width = fin_base_width, top_width = fin_top_width); 
 
 if(gen_body)
-       translate([0,0,global_base_height+32+10.5 + 12*1])
+       translate([0,0,global_base_height+32+10.5 + 12.0*1])
             body();
 
 
@@ -258,12 +248,12 @@ if(gen_cone) {
     translate([0, 0, global_base_height+32+10.5+59+2.31+8+4-1+14*cos(45)-1+4+5.8+34 + global_joint_height + 12*2])
         cone_with_base(
             cone_height = global_cone_height,
-            bottom_inner_radius = (13.8+global_inner_radius)/2 + global_joint_radius_narrower/2,
+            bottom_inner_radius = joint_female(global_inner_radius, 13.8, global_joint_luft),
             bottom_outer_radius = 13.8,
             top_inner_radius = global_cone_cone_top_inner_radius,
             top_outer_radius = global_cone_cone_top_outer_radius,
             base_height = global_joint_height,
-            base_inner_radius = (13.8+global_inner_radius)/2 + global_joint_radius_narrower/2,
+            base_inner_radius = joint_female(global_inner_radius, 13.8, global_joint_luft),
             base_outer_radius = 13.8,
             plank = 1
     );
