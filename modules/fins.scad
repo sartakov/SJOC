@@ -31,7 +31,7 @@ function generate_fin_shape(base_width, top_width, fin_height, shape_type) =
         [(base_width - top_width) / 2, fin_height]
     ];
 
-module gen_fins(number_of_fins, inner_radius, thickness, base_width, top_width, fin_height, shape_type) {
+module gen_fins(number_of_fins, radius, thickness, base_width, top_width, fin_height, shape_type, rod_radius) {
 
     // Calculate the angle between fins
     angle = 360 / number_of_fins;
@@ -39,7 +39,7 @@ module gen_fins(number_of_fins, inner_radius, thickness, base_width, top_width, 
     // Draw fins around the rocket
     for (i = [0:number_of_fins - 1]) {
         rotate(i * angle)
-            translate([-inner_radius, 0])
+            translate([-radius, 0])
                 rotate([0, 0, 90])
                     translate([-thickness * 0.5, 0, fin_z_offset+base_width])
                         rotate([0, 90, 0])
@@ -47,5 +47,10 @@ module gen_fins(number_of_fins, inner_radius, thickness, base_width, top_width, 
                                 polygon(points = generate_fin_shape(base_width, top_width, fin_height, shape_type));
     }
     
+
+    if(rod_radius) {
+	    translate([-rod_radius-global_rod_radius, global_rod_radius+thickness/2, fin_z_offset]) tube(height = global_rod_height, inner_radius = global_rod_radius, outer_radius = global_rod_radius+0.5);
+	    translate([rod_radius+global_rod_radius, -(global_rod_radius+thickness/2), fin_z_offset]) tube(height = global_rod_height, inner_radius = global_rod_radius, outer_radius = global_rod_radius+0.5);
+    }
 }
 

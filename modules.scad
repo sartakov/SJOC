@@ -3,6 +3,7 @@ include <modules/threads.scad>
 include <modules/joints.scad>
 include <modules/fins.scad>
 include <modules/tubes.scad>
+include <modules/block_engine.scad>
 
 module anchor(ah, al) {
 
@@ -85,34 +86,4 @@ module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top
 }
 
 
-
-// Function to draw rocket fins using Clipped Delta shape
-module rocket_fins(base_height, number_of_fins, outer_radius, fin_height, thickness, base_width, top_width) {
-    gen_fins(number_of_fins, global_inner_radius, fin_thickness, base_width, top_width, fin_height, fin_shape_type);
-
-    tube(height = base_height, inner_radius = global_inner_radius, outer_radius = outer_radius);
-
-    z_stop_ring = min(base_height-global_engine_stopper_height, global_engine_height);
-    z_joint_ring = max(z_stop_ring, base_height);
-    
-    translate([0, 0, z_stop_ring]) tube(height = global_engine_stopper_height, inner_radius = global_inner_radius-global_engine_stopper_narrower, outer_radius = global_outer_radius);
-
-    translate([0, 0, z_stop_ring-global_engine_stopper_narrower]) difference() {
-        cylinder(h=global_engine_stopper_narrower, r1=global_inner_radius, r2= global_inner_radius, $fn=100);
-        cylinder(h=global_engine_stopper_narrower, r1=global_inner_radius, r2= global_inner_radius-global_engine_stopper_narrower, $fn=100);
-    }
-
-//in case of upside down printing
-    translate([0, 0, z_stop_ring+global_engine_stopper_height]) difference() {
-        cylinder(h=global_engine_stopper_narrower, r1=global_inner_radius, r2= global_inner_radius, $fn=100);
-        cylinder(h=global_engine_stopper_narrower, r1=global_inner_radius-global_engine_stopper_narrower, r2= global_inner_radius, $fn=100);
-    }
-    
-    translate([0, 0, z_joint_ring]) tube(height = global_joint_height, inner_radius = global_inner_radius, outer_radius = global_outer_radius-global_joint_radius_narrower);
-
-//rod
-    translate([-outer_radius-global_rod_radius, global_rod_radius+thickness/2, fin_z_offset]) tube(height = min(global_rod_height, base_height), inner_radius = global_rod_radius, outer_radius = global_rod_radius+0.5);
-    translate([outer_radius+global_rod_radius, -(global_rod_radius+thickness/2), fin_z_offset]) tube(height = min(global_rod_height, base_height), inner_radius = global_rod_radius, outer_radius = global_rod_radius+0.5);
-
-}
 
