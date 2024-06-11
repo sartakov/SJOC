@@ -81,10 +81,29 @@ module tube2(height, inner_radius, outer_radius, bottom_male, top_male,plank, ga
                 
 }
 
-module tube3(h, ir1, or1, ir2, or2) {
+
+module tube3(h, ir1, or1, ir2, or2, text) {
     difference() {
         cylinder(h = h, r1 = or1, r2 = or2, $fn=100);
 	cylinder(h = h, r1 = ir1, r2 = ir2, $fn=100);
     }
+
+    if(text) {
+        // Parameters
+        text_size = global_text_size; // Size of the text
+       // total_height = 100; // Total height for the vertical text
+
+        total_height = h - text_size;
+        
+        text_begin = h - text_size/2;
+        
+        translate([0, -global_joint_radius_narrower/4, 0])
+        intersection() {
+         cylinder(h = h, r1 = or1, r2=or2, $fn=100);
+        translate([0, -ir1, text_begin])
+                vertical_text(text, text_size, (or1-ir1), total_height);
+        }
+    }
+
 }
 

@@ -3,7 +3,7 @@
 * Default model and Vostok-1 model 
 * Function to generate fins of different types
 * Function to generate make and female joints
-* Todo: tube and tube 2 are now cylinders
+* tube3: like tube and tube2 but cylinder
 * Todo: differentiate inner radius vs. rocket mount
 
 

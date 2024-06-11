@@ -18,8 +18,8 @@ global_engine_height = 70;
 
 global_base_height = 144;
 
-global_rod_radius = 2;
-global_rod_height = 28;
+global_rod_radius = 2.1;
+global_rod_height = 38;
 
 // fins
 number_of_fins = 4;
@@ -53,9 +53,12 @@ global_anchor_extrude = 2;
 
 // render
 
-gen_base = 1;
-gen_body = 1;
-gen_cone = 1;
+gen_base = 0;
+gen_body = 0;
+gen_cone = 0;
+
+// text
+global_text_size=6;
 
 module engine_bay(base_height) {
     z_stop_ring = min(base_height-global_engine_stopper_height, global_engine_height);
@@ -112,12 +115,15 @@ module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thick
             }
          }
     }
+        
+    translate([-14, -14, 4]) tube(height = min(global_rod_height, base_height), inner_radius = global_rod_radius, outer_radius = global_rod_radius+3);
+    translate([14, 14, 4]) tube(height = min(global_rod_height, base_height), inner_radius = global_rod_radius, outer_radius = global_rod_radius+3);
 }
 
 
 
 module stage2_3(inner_radius) {
-    translate([0,0,0])            tube3(h=59, or1=15.25,or2=13.27,ir1=inner_radius,ir2=inner_radius, $fn=100);  
+    translate([0,0,0])            tube3(h=59, or1=15.25,or2=13.27,ir1=inner_radius,ir2=inner_radius, $fn=100, text="BOCTOK");  
     translate([0,0,59])           tube3(h=2.31, or1=13.6,or2=13.6,ir1=inner_radius,ir2=inner_radius,$fn=100);  
     translate([0,0, 59+2.31])     tube3(h=12.6, or1=12.65,or2=12.3,ir1=inner_radius,ir2=inner_radius,$fn=100);  
     translate([0,0,59+2.31+12.6]) tube3(h=3, or1=12.3,or2=0,ir1=inner_radius,ir2=inner_radius,$fn=100); 
