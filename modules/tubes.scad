@@ -97,7 +97,7 @@ module tube3(h, ir1, or1, ir2, or2, text) {
         
         text_begin = h - text_size/2;
         
-        translate([0, -global_joint_radius_narrower/4, 0])
+        translate([0, -0.1, 0])
         intersection() {
          cylinder(h = h, r1 = or1, r2=or2, $fn=100);
         translate([0, -ir1, text_begin])

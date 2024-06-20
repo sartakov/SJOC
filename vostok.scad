@@ -18,8 +18,8 @@ global_engine_height = 70;
 
 global_base_height = 144;
 
-global_rod_radius = 2.1;
-global_rod_height = 38;
+global_lug_radius = 2.1;
+global_lug_height = 10;
 
 // fins
 number_of_fins = 4;
@@ -53,7 +53,7 @@ global_anchor_extrude = 2;
 
 // render
 
-gen_base = 0;
+gen_base = 1;
 gen_body = 0;
 gen_cone = 0;
 
@@ -96,8 +96,10 @@ module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thick
          }
     }
         
-    translate([-14, -14, 4]) tube(height = min(global_rod_height, base_height), inner_radius = global_rod_radius, outer_radius = global_rod_radius+3);
-    translate([14, 14, 4]) tube(height = min(global_rod_height, base_height), inner_radius = global_rod_radius, outer_radius = global_rod_radius+3);
+    translate([-12.25, -12.25, 4]) tube(height = min(global_lug_height, base_height), inner_radius = global_lug_radius, outer_radius = global_lug_radius+3);
+    
+        translate([-12.25, -12.25, 175]) tube(height = min(global_lug_height, base_height), inner_radius = global_lug_radius, outer_radius = global_lug_radius+2);
+    
 }
 
 

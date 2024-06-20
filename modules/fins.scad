@@ -31,7 +31,7 @@ function generate_fin_shape(base_width, top_width, fin_height, shape_type) =
         [(base_width - top_width) / 2, fin_height]
     ];
 
-module gen_fins(number_of_fins, radius, thickness, base_width, top_width, fin_height, shape_type, rod_radius) {
+module gen_fins(number_of_fins, radius, thickness, base_width, top_width, fin_height, shape_type, lug_position, lug_number) {
 
     // Calculate the angle between fins
     angle = 360 / number_of_fins;
@@ -48,9 +48,10 @@ module gen_fins(number_of_fins, radius, thickness, base_width, top_width, fin_he
     }
     
 
-    if(rod_radius) {
-	    translate([-rod_radius-global_rod_radius, global_rod_radius+thickness/2, fin_z_offset]) tube(height = global_rod_height, inner_radius = global_rod_radius, outer_radius = global_rod_radius+0.5);
-	    translate([rod_radius+global_rod_radius, -(global_rod_radius+thickness/2), fin_z_offset]) tube(height = global_rod_height, inner_radius = global_rod_radius, outer_radius = global_rod_radius+0.5);
+    if(lug_position) {
+	    translate([-lug_position-global_lug_radius, global_lug_radius+thickness/2, fin_z_offset]) tube(height = global_lug_height, inner_radius = global_lug_radius, outer_radius = global_lug_radius+0.5);
+	    if(lug_number == 2)
+		    translate([lug_position+global_lug_radius, -(global_lug_radius+thickness/2), fin_z_offset]) tube(height = global_lug_height, inner_radius = global_lug_radius, outer_radius = global_lug_radius+0.5);
     }
 }
 
