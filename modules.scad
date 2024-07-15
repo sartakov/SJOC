@@ -46,7 +46,7 @@ module vertical_text(text_string, text_size, text_extrude, total_height) {
 
 
 
-module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top_inner_radius, top_outer_radius, base_height, base_inner_radius, base_outer_radius, plank) {
+module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top_inner_radius, top_outer_radius, base_height, base_inner_radius, base_outer_radius, plank,fill) {
     // Combine the cone and the cylinder
     union() {
         // Cone part
@@ -57,7 +57,8 @@ module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top
 	    if(model_vostok)
                 cylinder(h = cone_height, r1=bottom_outer_radius, r2=0.25, $fn=100);
                //inner shape is cone to avoid problems with support
-            cylinder(h = cone_height-(bottom_outer_radius-bottom_inner_radius), r1 = bottom_inner_radius, r2 = 0, $fn=100);
+	    if(fill == 0)
+                cylinder(h = cone_height-(bottom_outer_radius-bottom_inner_radius), r1 = bottom_inner_radius, r2 = 0, $fn=100);
            }
            
 

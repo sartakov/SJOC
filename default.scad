@@ -108,7 +108,8 @@ if(gen_cone) {
             base_height = global_joint_height,
             base_inner_radius = global_inner_radius,
             base_outer_radius = global_outer_radius,
-            plank = 1
+            plank = 1,
+            fill = 0
          );
          translate([0, 0, -global_joint_height*2])
         gen_male_joint(ir1=global_inner_radius, or1=global_outer_radius);

@@ -1,10 +1,25 @@
+# Ultimate goals
+* Parametric build for Default: Input: Tube length, engine size, stages; Output: Best set of parts
+* Classical rocket shapes: Vostok1, Saturn V, V2
+
+
+
+# 0.5
+* Vostok1a: making it lightweight, more space inside, more tin walls, bigger fins
+* Vostok1b: add intake to boosters, maybe to the stage2/3 
+* Todo: cone should be able to contain lead
+* Todo: Longer tube in Default 
+
 # 0.4
 * Split code base in two parts: models and modules 
 * Default model and Vostok-1 model 
 * Function to generate fins of different types
-* Function to generate make and female joints
+* Function to generate male and female joints
 * tube3: like tube and tube2 but cylinder
-* Todo: differentiate inner radius vs. rocket mount
+
+## Flights
+* The default model on A engine flew OK, para was perfectly ejected in apogee, however, the shock cord burned as it was too close to the engine. The hook also burned. Suggestion: increase the length of the body, and add more space for gas and pads.
+* Vostok1 on C engine: Flew into the ditch. Was heavy and unbalanced, CM was too close to the engine or might be even after its top. Suggestion: make the boosters lighter, decrease overall mass, and try to make the nose heavier.
 
 
 # 0.3
@@ -12,6 +27,9 @@
 * Anchor instead of anker inside body
 * Extra rod 
 * Various nose cones
+
+## Fligths
+* Started ok, nose was too tight and didn't eject the para
 
 # 0.2
 * Makefile to separate compiling of STLs

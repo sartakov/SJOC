@@ -24,7 +24,7 @@ global_lug_height = 10;
 // fins
 number_of_fins = 4;
 
-fin_height = 5;
+fin_height = 6;
 fin_thickness = 1;
 fin_z_offset = 0;
 fin_base_width = 10;
@@ -53,8 +53,8 @@ global_anchor_extrude = 2;
 
 // render
 
-gen_base = 1;
-gen_body = 0;
+gen_base = 0;
+gen_body = 1;
 gen_cone = 0;
 
 // text
@@ -62,11 +62,11 @@ global_text_size=6;
 
 module stage2(base_height) {
                                     tube3(h = base_height, ir1 = global_inner_radius, ir2 = global_inner_radius, or1 = global_outer_radius, or2 = global_outer_radius);
-    translate([0,0,base_height])    tube3(h=32, or1=global_outer_radius,or2=13.5, ir1=global_inner_radius, ir2=global_inner_radius, $fn=100);
-    translate([0,0,base_height+32]) tube3(h=10.5, or1=13.5,or2=15.25,ir1=global_inner_radius, ir2=global_inner_radius, $fn=100); 
+    translate([0,0,base_height])    tube3(h=32, or1=global_outer_radius,or2=13.5, ir1=global_inner_radius, ir2=11.5, $fn=100);
+    translate([0,0,base_height+32]) tube3(h=10.5, or1=13.5,or2=15.25,ir1=11.5, ir2=13.0, $fn=100); 
   
     
-    translate([0, 0,base_height+32 + 10.5]) tube(height = global_joint_height, inner_radius = global_inner_radius, outer_radius = joint_male(global_inner_radius, 15.25, global_joint_luft));    
+    translate([0, 0,base_height+32 + 10.5]) tube(height = global_joint_height, inner_radius = 13.0, outer_radius = joint_male(13.0, 15.25, global_joint_luft));    
 }
 
 module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thickness, base_width, top_width) {
@@ -80,10 +80,16 @@ module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thick
             rotate([0,3.5,0]) {
             translate([-global_outer_radius*2-4, 0]) {
                 //boosters
-                translate([0,0,0])          cylinder(h=29, r1=13.5,r2=13.5,$fn=100);
-                translate([0, 0, 29])       cylinder(h=111, r1=13.5,r2=6.6,$fn=100);
-                translate([0, 0, 29+111])   cylinder(h=43, r1=6.6,r2=0.8,$fn=100);
-                translate([0, 0, 29+111+35])   cylinder(h=10, r1=3.5,r2=1,$fn=100);
+                translate([0,0,0])          tube3(h=29, or1=13.5,or2=13.5, ir1=12.5, ir2=12.5,$fn=100);
+                translate([0, 0, 29])       tube3(h=111, or1=13.5,or2=6.6, ir1=12.5, ir2=5.6, $fn=100);
+                //translate([0, 0, 29+111])   cylinder(h=43, r1=6.6,r2=0.8,$fn=100);
+              translate([0, 0, 29+111])   tube3(h=43, or1=6.6,or2=0.8,ir1=5.6, ir2=0.0, $fn=100);
+               translate([0, 0, 29+111+35])
+                difference() {
+                    cylinder(h=10, r1=3.5,r2=1,$fn=100);
+                    cylinder(h=9, r1=2.4,r2=0.5,$fn=100);
+                }
+
 
                 //fins
                 rotate([0, 0, 90])
@@ -112,7 +118,7 @@ module stage2_3(inner_radius) {
     translate([0,0,59+2.31+8])    tube3(h=4, or1=13.6,or2=13.6,ir1=inner_radius,ir2=inner_radius,$fn=100);
 
     //this cylinder does not exist in reality    
-    translate([0,0,59+2.31+8 + 4])                  tube3(h=14*cos(45)-0.5, or1=12,or2=12,ir1=inner_radius,ir2=inner_radius,$fn=100);  
+    translate([0,0,59+2.31+8 + 4])                  tube3(h=14*cos(45)-0.5, or1=13.5,or2=13.5,ir1=inner_radius,ir2=inner_radius,$fn=100);  
     translate([0,0,59+2.31+8+4-1+14*cos(45)-1])     tube3(h=4, or1=13.6,or2=13.6,ir1=inner_radius,ir2=inner_radius,$fn=100);
     translate([0,0,59+2.31+8+4-1+14*cos(45)-1+4])   tube3(h=5.8, or1=13.2,or2=13.2,ir1=inner_radius,ir2=inner_radius,$fn=100);  
     translate([0,0,59+2.31+8+4-1+14*cos(45)-1+4+5.8]) tube3(h=34, or1=13.8,or2=13.8,ir1=inner_radius,ir2=inner_radius,$fn=100);    
@@ -172,8 +178,8 @@ if(gen_base) {
 if(gen_body) {
        translate([0,0,global_base_height+32+10.5 + 10.0*1]) {
            difference() {
-               stage2_3(11);
-               gen_female_joint(ir1=global_inner_radius, or1=15.25);
+               stage2_3(13.0);
+               gen_female_joint(ir1=13, or1=15.25);
                translate([0,0,59+2.31+8+4-1+14*cos(45)-1+4+5.8 + 34 - global_joint_height]) gen_female_joint(ir1=11, or1=13.8);
            }
            decore2_3(11);
