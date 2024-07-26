@@ -4,11 +4,10 @@
 
 
 
-# 0.5
-* Vostok1a: making it lightweight, more space inside, more tin walls, bigger fins
-* Vostok1b: add intake to boosters, maybe to the stage2/3 
-* Todo: cone should be able to contain lead
-* Todo: Longer tube in Default 
+# WIP: 0.5
+* Vostok: making it lightweight, more space inside, tinner walls, bigger fins
+* WIP: Vostok1b: add intake to boosters, maybe to the stage2/3 
+* Default generates OpenRocket config
 
 # 0.4
 * Split code base in two parts: models and modules 

@@ -55,7 +55,7 @@ module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top
 	    if(model_default)
                 cone_power_series(n = 0.5, R = bottom_outer_radius, L = cone_height, s = 100);
 	    if(model_vostok)
-                cylinder(h = cone_height, r1=bottom_outer_radius, r2=0.25, $fn=100);
+                cylinder(h = cone_height, r1=bottom_outer_radius, r2=0.4, $fn=100);
                //inner shape is cone to avoid problems with support
 	    if(fill == 0)
                 cylinder(h = cone_height-(bottom_outer_radius-bottom_inner_radius), r1 = bottom_inner_radius, r2 = 0, $fn=100);
@@ -71,7 +71,14 @@ module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top
         }
         // Cylindrical base part
         translate([0, 0, -base_height])
-            tube(height=base_height, inner_radius=base_inner_radius, outer_radius = base_outer_radius);
+    	    if(fill) {
+    		    difference() {
+    			tube(height=base_height, inner_radius=0, outer_radius = base_outer_radius);
+    			cylinder(h = 10, r1 = 10, r2 = 0, $fn=4);
+    		    }
+    	    } else 
+	            tube(height=base_height, inner_radius=base_inner_radius, outer_radius = base_outer_radius);
+
 
         if(plank)
 	    //female connector
@@ -80,7 +87,7 @@ module cone_with_base(cone_height, bottom_inner_radius, bottom_outer_radius, top
                         cube([bottom_inner_radius*2,bottom_outer_radius/2,global_joint_height*0.1]);
 	    } else {
 	    //so far male connector
-                translate([-base_inner_radius, -base_inner_radius/4,-global_joint_height])
+                translate([-base_inner_radius, -base_inner_radius/4,-base_height])
                         cube([base_inner_radius*2,base_inner_radius/2,global_joint_height*0.1]);
 	    }
     }

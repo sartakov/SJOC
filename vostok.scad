@@ -54,7 +54,7 @@ global_anchor_extrude = 2;
 // render
 
 gen_base = 0;
-gen_body = 1;
+gen_body = 0;
 gen_cone = 0;
 
 // text
@@ -66,7 +66,12 @@ module stage2(base_height) {
     translate([0,0,base_height+32]) tube3(h=10.5, or1=13.5,or2=15.25,ir1=11.5, ir2=13.0, $fn=100); 
   
     
-    translate([0, 0,base_height+32 + 10.5]) tube(height = global_joint_height, inner_radius = 13.0, outer_radius = joint_male(13.0, 15.25, global_joint_luft));    
+    translate([0, 0,base_height+32 + 10.5]) tube(height = global_joint_height*0.98, inner_radius = 12.8, outer_radius = joint_male(12.8, 15.25, global_joint_luft));
+
+
+    rotate([0,0,45]) translate([-global_anchor_extrude/2, -12.8, base_height + 23.5 +4.75*global_gate_anker_h]) anchor(global_gate_anker_h, global_gate_anker_l);
+    rotate([0,0,-135]) translate([-global_anchor_extrude/2, -12.8, base_height + 23.5 +4.75*global_gate_anker_h]) anchor(global_gate_anker_h, global_gate_anker_l);
+    
 }
 
 module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thickness, base_width, top_width) {
@@ -79,6 +84,13 @@ module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thick
         rotate(i * angle) {
             rotate([0,3.5,0]) {
             translate([-global_outer_radius*2-4, 0]) {
+                //bottom plate and engines
+                translate([5,5,-4])          tube3(h=5, or1=4.5,or2=3.75, ir1=4, ir2=1.5,$fn=100);
+                translate([-5,-5,-4])          tube3(h=5, or1=4.5,or2=3.75, ir1=4, ir2=1.5,$fn=100);
+                translate([5,-5,-4])          tube3(h=5, or1=4.5,or2=3.75, ir1=4, ir2=1.5,$fn=100);
+                translate([-5,5,-4])          tube3(h=5, or1=4.5,or2=3.75, ir1=4, ir2=1.5,$fn=100);
+                translate([0,0,0])          tube3(h=1, or1=13.5,or2=13.5, ir1=0, ir2=0,$fn=100);
+                
                 //boosters
                 translate([0,0,0])          tube3(h=29, or1=13.5,or2=13.5, ir1=12.5, ir2=12.5,$fn=100);
                 translate([0, 0, 29])       tube3(h=111, or1=13.5,or2=6.6, ir1=12.5, ir2=5.6, $fn=100);
@@ -93,7 +105,7 @@ module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thick
 
                 //fins
                 rotate([0, 0, 90])
-                    translate([-thickness*0.5, 13.0, base_width])
+                    translate([-thickness*0.5, 12.8, base_width])
                         rotate([0, 90, 0])
                             linear_extrude(thickness)
                                 polygon(points = generate_fin_shape(base_width, top_width, fin_height, 0));
@@ -101,40 +113,54 @@ module booster_fins(base_height, number_of_fins, outer_radius, fin_height, thick
             }
          }
     }
-        
-    translate([-12.25, -12.25, 4]) tube(height = min(global_lug_height, base_height), inner_radius = global_lug_radius, outer_radius = global_lug_radius+3);
+ 
+
+    translate([12.25, 12.25, 28]) tube3(h = 2, ir1 = global_lug_radius, ir2=global_lug_radius, or1 = global_lug_radius+1.7, or2 = global_lug_radius+1.2);    
+    translate([-12.25, -12.25, 28]) tube3(h = 2, ir1 = global_lug_radius, ir2=global_lug_radius, or1 = global_lug_radius+1.7, or2=global_lug_radius+1.2);
     
-        translate([-12.25, -12.25, 175]) tube(height = min(global_lug_height, base_height), inner_radius = global_lug_radius, outer_radius = global_lug_radius+2);
+    translate([12.25, 12.25, 30]) tube3(h = 2, ir1 = global_lug_radius, ir2=global_lug_radius+1.2, or1 = global_lug_radius+1.2, or2 = global_lug_radius+1.3);     
+    translate([-12.25, -12.25, 30]) tube3(h = 2, ir1 = global_lug_radius, ir2=global_lug_radius+1.2, or1 = global_lug_radius+1.2, or2 = global_lug_radius+1.3);  
+    
+     translate([12.25, 12.25, 181.5]) tube3(h = global_lug_height/2, ir2 = global_lug_radius, or2 = global_lug_radius+0.5,ir1=global_lug_radius, or1 = global_lug_radius+1);
+     translate([-12.25, -12.25, 181.5]) tube3(h = global_lug_height/2, ir2 = global_lug_radius, or2 = global_lug_radius+0.5,ir1=global_lug_radius, or1 = global_lug_radius+1);
     
 }
 
 
 
 module stage2_3(inner_radius) {
-    translate([0,0,0])            tube3(h=59, or1=15.25,or2=13.27,ir1=inner_radius,ir2=inner_radius, $fn=100, text="BOCTOK");  
+    translate([0,0,0])            tube3(h=59, or1=15.25,or2=13.27,ir1=12.9,ir2=inner_radius, $fn=100, text="BOCTOK");  
     translate([0,0,59])           tube3(h=2.31, or1=13.6,or2=13.6,ir1=inner_radius,ir2=inner_radius,$fn=100);  
-    translate([0,0, 59+2.31])     tube3(h=12.6, or1=12.65,or2=12.3,ir1=inner_radius,ir2=inner_radius,$fn=100);  
-    translate([0,0,59+2.31+12.6]) tube3(h=3, or1=12.3,or2=0,ir1=inner_radius,ir2=inner_radius,$fn=100); 
+    translate([0,0, 59+2.31])     tube3(h=12.6, or1=13.65,or2=13.3,ir1=inner_radius,ir2=inner_radius,$fn=100);  
+    translate([0,0,59+2.31+12.6]) tube3(h=3, or1=13.3,or2=0,ir1=inner_radius,ir2=inner_radius,$fn=100); 
     translate([0,0,59+2.31+8])    tube3(h=4, or1=13.6,or2=13.6,ir1=inner_radius,ir2=inner_radius,$fn=100);
 
     //this cylinder does not exist in reality    
-    translate([0,0,59+2.31+8 + 4])                  tube3(h=14*cos(45)-0.5, or1=13.5,or2=13.5,ir1=inner_radius,ir2=inner_radius,$fn=100);  
+    translate([0,0,59+2.31+8 + 4]) {
+            difference() {
+                tube3(h=14*cos(45)-0.5, or1=13.2,or2=13.2,ir1=inner_radius,ir2=inner_radius,$fn=100); 
+                difference() {
+                        cylinder(h=1, r=13.2, $fn = 100);
+                        cylinder(h=1, r1=inner_radius+0.2, r2=13.2, $fn=100);
+                }
+                 
+        } 
+    }
     translate([0,0,59+2.31+8+4-1+14*cos(45)-1])     tube3(h=4, or1=13.6,or2=13.6,ir1=inner_radius,ir2=inner_radius,$fn=100);
     translate([0,0,59+2.31+8+4-1+14*cos(45)-1+4])   tube3(h=5.8, or1=13.2,or2=13.2,ir1=inner_radius,ir2=inner_radius,$fn=100);  
     translate([0,0,59+2.31+8+4-1+14*cos(45)-1+4+5.8]) tube3(h=34, or1=13.8,or2=13.8,ir1=inner_radius,ir2=inner_radius,$fn=100);    
 
-    translate([-global_anchor_extrude/2, -inner_radius, global_joint_height+4.75*global_gate_anker_h]) anchor(global_gate_anker_h, global_gate_anker_l);
 }
 
 module decore2_3(inner_radius) {
 
     angle2 = 360 / 6;
     translate([0,0,59+2.31])
-    for (i = [0:6 - 1])
-        rotate(i * angle2)
-            translate([-13.4, 0]) {
-                rotate([0, 0, 45]) cylinder(h=10, r1=2.5,r2=0,$fn=4);
-                translate([0,0,-2]) rotate([0, 0, 45]) cylinder(h=2, r1=2.5,r2=2.5,$fn=4); 
+        for (i = [0:6 - 1])
+            rotate(i * angle2)
+                translate([-13.4, 0]) {
+                    rotate([0, 0, 45]) cylinder(h=10, r1=2.5,r2=0,$fn=4);
+                    translate([0,0,-2]) rotate([0, 0, 45]) cylinder(h=2, r1=2.5,r2=2.5,$fn=4);
             }
 
 //////
@@ -142,9 +168,9 @@ module decore2_3(inner_radius) {
     translate([0,0,59+2.31+8+4-1])
     for (i = [0:9 - 1])
         rotate(i * angle3)
-            translate([-12.0, 0, 7*cos(45)]) {
-                rotate([0, 45, 90]) cube([1, 1, 14],center=true);
-                rotate([0, -45, 90]) cube([1, 1, 14],center=true);
+            translate([-13.0, 0, 7*cos(45)]) {
+                rotate([0, 0, 90]) cube([1, 1, 14],center=true);
+  //              rotate([0, -45, 90]) cube([1, 1, 14],center=true);
             }
  
 /////////  
@@ -176,29 +202,35 @@ if(gen_base) {
 }
 
 if(gen_body) {
-       translate([0,0,global_base_height+32+10.5 + 10.0*1]) {
+       translate([0,0,global_base_height+32+10.5 + 1*(10.0*1 - global_joint_height*0.02)]) {
            difference() {
-               stage2_3(13.0);
-               gen_female_joint(ir1=13, or1=15.25);
+               stage2_3(12);
+               gen_female_joint(ir1=12.8, or1=15.25);
                translate([0,0,59+2.31+8+4-1+14*cos(45)-1+4+5.8 + 34 - global_joint_height]) gen_female_joint(ir1=11, or1=13.8);
            }
-           decore2_3(11);
+           difference() {
+                decore2_3(12);
+                cylinder(h=200, r=12, $fn=100);
+           }
        }
 }
 
 if(gen_cone) {
-    translate([0, 0, global_base_height+32+10.5+59+2.31+8+4-1+14*cos(45)-1+4+5.8+34 + global_joint_height + 10.1])
+    translate([0, 0, global_base_height+32+10.5+59+2.31+8+4-1+14*cos(45)-1+4+5.8+34 + 1*(global_joint_height + 10.1 - 2*global_joint_height*0.02)])
         cone_with_base(
             cone_height = global_cone_height,
             bottom_inner_radius = 11,
             bottom_outer_radius = 13.8,
             top_inner_radius = global_cone_cone_top_inner_radius,
             top_outer_radius = global_cone_cone_top_outer_radius,
-            base_height = global_joint_height,
+            base_height = global_joint_height*0.98,
             base_inner_radius = 11,
             base_outer_radius = joint_male(11, 13.8, global_joint_luft),
-            plank = 1
+            plank = 1,
+            fill = 1
     );
 
 }
 
+//rotate([90,0,-90])
+//scale([0.05,0.05,0.05]) translate([0,50,-250]) import("/Users/sartakov/Desktop/vostok.stl");
