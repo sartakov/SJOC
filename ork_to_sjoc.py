@@ -243,7 +243,7 @@ def write_nosecone(scad_filename, values):
     Writes the extracted values to a .scad file.
     """
     with open(scad_filename, 'w') as file:
-        file.write(f"include <../modules_ork.scad>\n\n")
+        file.write(f"include <../../modules_ork.scad>\n\n")
         for key, value in values.items():
             file.write(f"{key} = {value};\n")
         file.write(f"\nnosecone_with_shoulders();\n")

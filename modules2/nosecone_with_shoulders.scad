@@ -66,6 +66,9 @@ module nosecone_with_shoulders(
         if (aftshouldercapped) {
             translate([0, 0, -aftshoulderlength])
                 cylinder(r = aftshoulderradius, h = aftshoulderthickness, center = false, $fn=100);
+        } else {
+            translate([-(aftshoulderradius-aftshoulderthickness)/4, -(aftshoulderradius-aftshoulderthickness),-aftshoulderlength])
+            cube([(aftshoulderradius-aftshoulderthickness)/2, (aftshoulderradius-aftshoulderthickness)*2,aftshoulderthickness*2]);
         }
     }
 

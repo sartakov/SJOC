@@ -70,7 +70,7 @@ module bodytube_with_fins(trapezoidfinset_total=trapezoidfinset_total,
         
     }
 
-    module fin2(thicnkess, points) {
+    module fin2(thickness, points) {
         translate([thickness, 0, -0.5*thickness	])
             linear_extrude(height=thickness)
 	        polygon(points);
@@ -95,6 +95,7 @@ module bodytube_with_fins(trapezoidfinset_total=trapezoidfinset_total,
         for (j = [0 : fincount[i] - 1]) {
 	    echo(find_max_x(finpoints[i]));
             echo(axialoffset_method[i], length, axialoffset[i], /* fin_length[i]*/ find_max_x(finpoints[i]));
+            echo(fin_thickness[i], fin_thickness[i]*100);
             rotate([0, 0, j * 360 / fincount[i] + rotation[i]])
             translate([radiusoffset[i], radius-thickness*0.5, freeformfin_position(axialoffset_method[i], length, axialoffset[i], /* fin_length[i]*/ find_max_x(finpoints[i]))])
                 rotate([0,90,0])
