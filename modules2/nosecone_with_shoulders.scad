@@ -39,6 +39,7 @@ module nosecone_with_shoulders(
 
     // Generate the aft shoulder
     module gen_aft_shoulder() {
+	scale([0.99, 0.99, 1])
         difference() {
             cylinder(r = aftshoulderradius, h = aftshoulderlength, center = false, $fn=100);
             cylinder(r = aftshoulderradius - aftshoulderthickness, h = aftshoulderlength, center = false, $fn=100);
