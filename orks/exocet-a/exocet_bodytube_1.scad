@@ -1,9 +1,9 @@
 include <../../modules_ork.scad>
 
 length = 253.74599999999998;
-thickness = 1;
-radius = 11;
-motor_overhang = 8.0;
+thickness = 0.9956599999999989;
+radius = 10.995659999999999;
+motor_overhang = 10.0;
 motor_diameter = 18.0;
 motor_length = 70.0;
 launchlug_total = 1;
@@ -14,7 +14,7 @@ launchlug_instanceseparation = [60.0];
 launchlug_length = [21.1455];
 launchlug_radius = [1.5425225999999996];
 launchlug_position = [-0.0972693];
-launchlug_thickness = [3.3299999999999996E-4];
+launchlug_thickness = [0.33299999999999996];
 trapezoidfinset_height = [1.057275, 1.099566, 21.1455];
 trapezoidfinset_sweeplength = [2.11455, 4.259536199999999, 59.2074];
 trapezoidfinset_tipchord = [44.40555, 215.599518, 15.436214999999995];
@@ -22,12 +22,12 @@ trapezoidfinset_rootchord = [46.52009999999999, 219.9132, 88.8111];
 trapezoidfinset_filletradius = [0.0, 0.0, 0.0];
 trapezoidfinset_cant = [0.0, 0.0, 0.0];
 trapezoidfinset_crosssection = ["square", "square", "square"];
-trapezoidfinset_thickness = [4.2291, 3.1718249999999997, 1.7499999999999998];
+trapezoidfinset_thickness = [4.2291, 3.1718249999999997, 1.0];
 trapezoidfinset_position_type = ["bottom", "bottom", "top"];
 trapezoidfinset_position = [-0.0, -0.0, 0.09832657499999997];
 trapezoidfinset_axialoffset = [-0.0, -0.0, 98.32657499999998];
-trapezoidfinset_rotation = [135, 0.0, 0.0];
-trapezoidfinset_angleoffset = [135, 0.0, 0.0];
+trapezoidfinset_rotation = [134.99974273092943, 0.0, 0.0];
+trapezoidfinset_angleoffset = [134.99974273092943, 0.0, 0.0];
 trapezoidfinset_radiusoffset = [0.0, 0.0, 0.0];
 trapezoidfinset_fincount = [2, 4, 4];
 trapezoidfinset_instancecount = [2, 4, 4];
@@ -38,7 +38,7 @@ freeformfinset_angleoffset = [0.0];
 freeformfinset_rotation = [0.0];
 freeformfinset_axialoffset = [-3.1718249999999997];
 freeformfinset_position = ["bottom"];
-freeformfinset_thickness = [1.7499999999999998];
+freeformfinset_thickness = [1.0];
 freeformfinset_crosssection = ["square"];
 freeformfinset_cant = [0.0];
 freeformfinset_tabheight = [];
@@ -49,8 +49,36 @@ freeformfinset_filletradius = [0.0];
 freeformfinset_radiusoffset_method = ["surface"];
 freeformfinset_angleoffset_method = ["relative"];
 freeformfinset_axialoffset_method = ["bottom"];
-freeformfinset_finpoints = [[[0.0, 0.0], [0.010572749999999999, 0.019030949999999998], [0.015436214999999996, 0.012687299999999999], [0.01691640000000011, 0.0]]];
+freeformfinset_finpoints = [[[0.0, 0.0], [0.010572749999999999, 0.019030949999999998], [0.015436214999999996, 0.012687299999999999], [0.016916400000000137, 0.0]]];
 
-bodytube_with_fins();
 
-engine_bay(65, 9.01, radius, 60, 2);
+difference() {
+    union() {
+        bodytube_with_fins();
+        engine_bay(motor_length - motor_overhang +5, motor_diameter*0.5+0.01, radius, motor_length - motor_overhang, 2);
+    }
+
+    translate([-radius*10, -radius*10, 65]) cube([radius*20, radius*20, length]);
+    
+    translate([0,0,60])
+        difference() {
+            cylinder(h=5, r=10000, $fn=100);
+            cylinder(h=5, r=radius-thickness-0.02, $fn=100);
+    }
+    //cube([1000, 1000, 1000]);
+}
+
+
+
+translate([0,0,0.1])
+difference() {
+    union() {
+        bodytube_with_fins();
+        //engine_bay(motor_length - motor_overhang +5, motor_diameter*0.5+0.01, radius, motor_length - motor_overhang, 2);
+    }
+
+    translate([-radius*10, -radius*10, 0]) cube([radius*20, radius*20, 60]);
+    
+
+    //cube([1000, 1000, 1000]);
+}
