@@ -31,7 +31,7 @@ def extract_nosecone_values(root):
 
     # Convert numeric values to float and multiply by 1000
     for key in values:
-        if key != 'shape' and key != 'shapeparameter' and values[key].replace('.', '', 1).isdigit():
+        if key != 'shape' and key != 'shapeparameter' and values[key].replace('.', '', 1).replace('E-', '', 1).isdigit():
             values[key] = str(float(values[key]) * 1000)
     
     values['shape'] = f'"{values["shape"]}"'
@@ -68,7 +68,7 @@ def extract_trapezoidfinset_values(subcomponent):
     
     # Convert numeric values to float and multiply by 1000
     for key in trapezoidfinset_values:
-        if key not in ['trapezoidfinset_fincount', 'trapezoidfinset_instancecount', 'trapezoidfinset_position'] and trapezoidfinset_values[key].replace('.', '', 1).isdigit():
+        if key not in ['trapezoidfinset_angleoffset', 'trapezoidfinset_fincount', 'trapezoidfinset_instancecount', 'trapezoidfinset_position', 'trapezoidfinset_rotation'] and trapezoidfinset_values[key].replace('.', '', 1).replace('E-', '', 1).isdigit():
             trapezoidfinset_values[key] = str(float(trapezoidfinset_values[key]) * 1000)
 
     trapezoidfinset_values['trapezoidfinset_crosssection'] = f'"{trapezoidfinset_values["trapezoidfinset_crosssection"]}"'
@@ -95,7 +95,7 @@ def extract_launchlug_values(subcomponent):
     
     # Convert numeric values to float and multiply by 1000
     for key in launchlug_values:
-        if key != 'launchlug_instancecount' and launchlug_values[key].replace('.', '', 1).isdigit():
+        if key != 'launchlug_instancecount' and launchlug_values[key].replace('.', '', 1).replace('E-', '', 1).isdigit():
             launchlug_values[key] = str(float(launchlug_values[key]) * 1000)
     
     return launchlug_values
@@ -172,14 +172,14 @@ def extract_bodytube_values(root, base_filename):
         
         # Convert numeric values to float and multiply by 1000
         for key in values:
-            if values[key].replace('.', '', 1).isdigit():
+            if values[key].replace('.', '', 1).replace('E-', '', 1).isdigit():
                 values[key] = str(float(values[key]) * 1000)
-        
+
         # Extract motormount values
         motormount = bodytube.find('.//motormount')
         if motormount is not None:
             overhang = motormount.findtext('overhang', default='')
-            if overhang.replace('.', '', 1).isdigit():
+            if overhang.replace('.', '', 1).replace('E-', '', 1).isdigit():
                 overhang = str(float(overhang) * 1000)
             values['motor_overhang'] = overhang
             
@@ -187,9 +187,9 @@ def extract_bodytube_values(root, base_filename):
             if motor is not None:
                 motor_diameter = motor.findtext('diameter', default='')
                 motor_length = motor.findtext('length', default='')
-                if motor_diameter.replace('.', '', 1).isdigit():
+                if motor_diameter.replace('.', '', 1).replace('E-', '', 1).isdigit():
                     motor_diameter = str(float(motor_diameter) * 1000)
-                if motor_length.replace('.', '', 1).isdigit():
+                if motor_length.replace('.', '', 1).replace('E-', '', 1).isdigit():
                     motor_length = str(float(motor_length) * 1000)
                 values['motor_diameter'] = motor_diameter
                 values['motor_length'] = motor_length
@@ -253,7 +253,7 @@ def write_bodytube(scad_filename, values):
     Writes the extracted values to a .scad file.
     """
     with open(scad_filename, 'w') as file:
-        file.write("include <../modules_ork.scad>\n\n")
+        file.write("include <../../modules_ork.scad>\n\n")
         
         for key, value in values.items():
             if isinstance(value, list):
@@ -262,6 +262,7 @@ def write_bodytube(scad_filename, values):
                 file.write(f"{key} = {value};\n")
 
         file.write("\nbodytube_with_fins();\n")
+        file.write("\n if(motor_diameter) engine_bay(motor_length - motor_overhang +0.5, motor_diameter*0.5+0.01, radius, motor_length - motor_overhang, 2);\n");
 
 
 def main(zip_path, xml_filename):
