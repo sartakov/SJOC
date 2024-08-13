@@ -3,10 +3,8 @@
 * Classical rocket shapes: Vostok1, Saturn V, V2
 
 # Known bugs
-* do not multiply angle
 * filled as thickness
 * thickness sometimes is wrong
-* float point problems
 
 # WIP: 0.5
 * Vostok: making it lightweight, more space inside, tinner walls, bigger fins
@@ -47,3 +45,5 @@
 * Trapecoid fin
 * Variable number of fins
 * Two genders on body
+
+9.95659999999999E-4
